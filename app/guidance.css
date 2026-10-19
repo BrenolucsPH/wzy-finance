@@ -1,0 +1,353 @@
+.getting-started {
+  padding: 26px;
+  margin-bottom: 24px;
+}
+.guide-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+.guide-heading h2 {
+  font-size: 22px;
+  letter-spacing: -0.6px;
+  margin: 8px 0;
+}
+.guide-heading p,
+.getting-started-steps p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.guide-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  padding: 9px;
+  border-radius: 9px;
+  color: var(--muted);
+}
+.getting-started-steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 25px 0;
+  padding: 0;
+}
+.getting-started-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.guide-step-number {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  background: var(--tint);
+}
+.getting-started-steps h3 {
+  font-size: 14px;
+  margin: 5px 0;
+}
+.getting-started .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-align: left;
+  line-height: 1.6;
+}
+.step-done .guide-step-number {
+  background: var(--accent);
+  color: var(--bg);
+}
+.context-tip {
+  margin-bottom: 22px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface) 45%, transparent);
+}
+.context-tip summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+.context-tip summary > svg {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+.tip-open-label {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.context-tip p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+.context-tip summary:focus-visible,
+.guide-content summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
+}
+.prerequisite-icon {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  background: var(--tint);
+  border-radius: 18px;
+}
+.guide-content {
+  font-size: 14px;
+  line-height: 1.8;
+}
+.guide-content p {
+  color: var(--muted);
+}
+.guide-content li {
+  margin-bottom: 18px;
+}
+.guide-content ol {
+  padding-left: 22px;
+}
+.guide-content details {
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.guide-content summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.sidebar-editor {
+  list-style: none;
+  margin: 22px 0;
+  padding: 0;
+}
+.sidebar-editor li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+}
+.sidebar-editor-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 500;
+}
+.pin-choice {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.pin-choice input {
+  accent-color: var(--accent);
+  width: 17px;
+  height: 17px;
+}
+.sidebar-order-actions {
+  display: flex;
+  gap: 4px;
+}
+.sidebar-order-actions button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.menu-pin {
+  margin-left: auto;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.collapsed .menu-pin {
+  display: none;
+}
+.sidebar nav {
+  flex-shrink: 0;
+}
+.sidebar nav .nav-label {
+  margin: 20px 12px 8px;
+}
+.sidebar {
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+}
+.sidebar-bottom > button span {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.modal-overlay {
+  overscroll-behavior: contain;
+  color: var(--text);
+  isolation: isolate;
+}
+.modal {
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  touch-action: pan-y;
+}
+.account-panel {
+  animation-fill-mode: backwards;
+}
+.admin-panel,
+.admin-members,
+.admin-member {
+  min-width: 0;
+}
+.admin-member-info {
+  overflow-wrap: anywhere;
+}
+.admin-device {
+  overflow-wrap: anywhere;
+}
+.admin-panel .admin-pagination {
+  flex-wrap: wrap;
+}
+.admin-search input {
+  min-width: 0;
+  font-size: 16px;
+}
+.mobile-nav button {
+  min-width: 0;
+}
+.mobile-nav button span {
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.modal-overlay .button.primary {
+  color: var(--button-ink);
+  background: linear-gradient(
+    165deg,
+    var(--button-edge),
+    var(--button-face) 38%
+  );
+}
+@media (max-width: 900px) {
+  .getting-started-steps {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+@media (max-width: 600px) {
+  .sidebar .sidebar-collapse {
+    display: none !important;
+  }
+  .getting-started {
+    padding: 21px;
+  }
+  .guide-heading h2 {
+    font-size: 20px;
+  }
+  .tip-open-label {
+    display: none;
+  }
+  .context-tip {
+    padding: 14px;
+  }
+  .modal-overlay {
+    align-items: flex-start;
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+    overflow: hidden;
+  }
+  .modal {
+    margin: 0;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-bottom));
+    max-width: 100%;
+    padding: 21px;
+    border-radius: 18px;
+  }
+  .modal-title {
+    align-items: flex-start;
+  }
+  .modal-title h2 {
+    overflow-wrap: anywhere;
+    font-size: 19px;
+  }
+  .modal-title button {
+    flex-shrink: 0;
+  }
+  .sidebar-editor-label {
+    font-size: 11px;
+  }
+  .pin-choice span {
+    display: none;
+  }
+  .sidebar-order-actions button {
+    width: 33px;
+    height: 36px;
+  }
+  .form-actions {
+    flex-wrap: wrap;
+  }
+  .admin-panel .admin-member {
+    display: block;
+  }
+  .admin-member-actions {
+    display: flex;
+    margin-top: 16px;
+    gap: 8px;
+  }
+  .admin-panel .admin-member-info h3 {
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+  .admin-panel .admin-member-info small {
+    display: block;
+    line-height: 1.8;
+  }
+  .admin-panel .admin-pagination {
+    justify-content: center;
+    gap: 9px;
+  }
+  .admin-panel .admin-pagination .button {
+    font-size: 12px;
+    padding: 10px;
+  }
+  .sidebar .menu-pin {
+    display: block;
+  }
+  .mobile-nav {
+    height: calc(68px + env(safe-area-inset-bottom));
+  }
+  .main-wrap main {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+}
+
+.view-content {
+  animation-fill-mode: backwards;
+}
+@media (max-width: 1000px) {
+  .sidebar .sidebar-collapse {
+    display: none !important;
+  }
+}
+
+.modal-overlay .modal {
+  margin: 0 !important;
+}

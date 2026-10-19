@@ -1,0 +1,51 @@
+import assert from 'node:assert/strict';
+import {createHmac,randomUUID} from 'node:crypto';
+import {split,dueDate,balance,totals,parseMoney} from '../lib/finance.ts';
+if (!/^wzy_qa_[a-f0-9]{32}$/.test(process.env.WZY_TEST_SCHEMA || '')) throw new Error('Runtime verification requires its isolated temporary test schema.');
+const base='http://127.0.0.1:5173';
+const requestOrigin=process.env.WZY_TEST_ORIGIN || base;
+const directFetch=globalThis.fetch;
+const checks=[];
+let cookieA='',cookieB='';
+async function call(path,body,cookie='',expected=200,method){const r=await fetch(base+'/api/'+path,{method:method||(body?'POST':'GET'),headers:{Origin:requestOrigin,...(cookie?{Cookie:cookie}:{}),...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});const text=await r.text();let data;try{data=JSON.parse(text)}catch{data=text};assert.equal(r.status,expected,`${path}: ${text}`);return{data,cookie:r.headers.get('set-cookie')?.split(';')[0]};}
+function test(name){checks.push(name);console.log('PASS',name)}
+assert.deepEqual(split(5390,6),[899,899,898,898,898,898]);assert.equal(split(4090,6).reduce((a,b)=>a+b),4090);assert.equal(parseMoney('1.234,56'),123456);assert.equal(dueDate('2028-02',31),'2028-02-29');assert.equal(dueDate('2027-02',31),'2027-02-28');test('Exact cent splits, Brazilian money and February due dates');
+const password='QA-'+randomUUID();const emailA='qa-a-'+Date.now()+'@example.test';const emailB='qa-b-'+Date.now()+'@example.test';
+let r=await call('auth/register',{name:'Pessoa QA A',email:emailA,password},'',201);cookieA=r.cookie;assert.ok(cookieA);r=await call('auth/register',{name:'Pessoa QA B',email:emailB,password},'',201);cookieB=r.cookie;test('Registration and HttpOnly session creation');
+r=await call('records',undefined,cookieA);assert.deepEqual(r.data.entries,[]);test('New accounts start empty');
+await call('records',undefined,'',401);const csrf=await fetch(base+'/api/records',{method:'POST',headers:{Cookie:cookieA,'Content-Type':'application/json'},body:'{}'});assert.equal(csrf.status,403);await call('auth/mfa/setup',undefined,cookieA,405);test('Unauthenticated access, CSRF and unsafe GET mutations blocked');
+const bank={id:randomUUID(),kind:'account',name:'Banco QA',amount:0,initial:100000};r=await call('records',bank,cookieA);const bankSaved=r.data.entry;const bank2={id:randomUUID(),kind:'account',name:'Reserva QA',amount:0,initial:0};await call('records',bank2,cookieA);
+const tx={id:randomUUID(),kind:'transaction',name:'Receita QA',amount:55000,type:'income',category:'Salário',accountId:bank.id,date:'2026-10-08',status:'paid'};await call('records',tx,cookieA);
+await call('records',{...tx,id:randomUUID(),name:'Despesa QA',amount:20000,type:'expense'},cookieA);await call('records',{...tx,id:randomUUID(),name:'Transferência QA',amount:10000,type:'transfer',targetId:bank2.id},cookieA);
+r=await call('records',undefined,cookieA);assert.equal(balance(bank,r.data.entries),125000);assert.equal(balance(bank2,r.data.entries),10000);assert.deepEqual(totals(r.data.entries,'2026-10'),{income:55000,expense:20000,pending:0});test('Saved income, expense and transfer calculate correct balances');
+r=await call('records',undefined,cookieB);assert.deepEqual(r.data.entries,[]);await call('records',{...tx,id:randomUUID()},cookieB,400);await call('records/'+bank.id,undefined,cookieB,404,'DELETE');test('User isolation prevents cross-account reads, writes and deletes');
+await call('records',{...bankSaved,name:'Banco editado'},cookieA);await call('records',{...bankSaved,name:'Edição antiga'},cookieA,409);await call('records/'+bank.id,undefined,cookieA,400,'DELETE');test('Stale updates and deletion of linked accounts blocked');
+const recurring={id:randomUUID(),kind:'recurring',name:'Internet QA',amount:11990,day:15,category:'Moradia',accountId:bank.id};await call('records',recurring,cookieA);await call('pay',{id:recurring.id,month:'2026-10',accountId:bank.id,date:'2026-10-08'},cookieA);await call('pay',{id:recurring.id,month:'2026-10',accountId:bank.id,date:'2026-10-08'},cookieA,409);await call('pay',{id:recurring.id,month:'2026-11',accountId:bank.id,date:'2026-11-15'},cookieA);test('Recurring payment saved once per month and renewed next month');
+const debt={id:randomUUID(),kind:'debt',name:'Parcela única QA',amount:10001,installments:1,paidInstallments:0,day:20,accountId:bank.id};await call('records',debt,cookieA);const concurrent=await Promise.all(['2026-10','2026-11'].map(month=>fetch(base+'/api/pay',{method:'POST',headers:{Cookie:cookieA,Origin:requestOrigin,'Content-Type':'application/json'},body:JSON.stringify({id:debt.id,month,accountId:bank.id,date:'2026-10-08'})})));assert.equal(concurrent.filter(x=>x.status===200).length,1);assert.ok(concurrent.filter(x=>[400,409].includes(x.status)).length===1);test('Concurrent requests cannot overpay the last debt installment');
+const group={id:randomUUID(),kind:'group',name:'YouTube QA',amount:5390,day:16,members:['A','B','C'],payments:{'2026-10':['A']}};r=await call('records',group,cookieA);await call('records',{...r.data.entry,payments:{'2026-10':['A','B']}},cookieA);r=await call('records',undefined,cookieA);assert.deepEqual(r.data.entries.find(x=>x.id===group.id).payments['2026-10'],['A','B']);test('Group participants and monthly payment status persist');
+const fileForm=new FormData();fileForm.set('file',new File(['%PDF-1.4\n%%EOF'], 'comprovante-qa.pdf',{type:'application/pdf'}));const upload=await fetch(base+'/api/files',{method:'POST',headers:{Cookie:cookieA,Origin:requestOrigin},body:fileForm});assert.equal(upload.status,201,await upload.clone().text());const uploaded=await upload.json();await call('files/'+uploaded.file.id,undefined,cookieB,404);const download=await fetch(base+'/api/files/'+uploaded.file.id,{headers:{Cookie:cookieA}});assert.equal(download.status,200);assert.ok(download.headers.get('content-disposition').startsWith('attachment'));const badForm=new FormData();badForm.set('file',new File(['<script>alert(1)</script>'],'bad.html',{type:'text/html'}));const badUpload=await fetch(base+'/api/files',{method:'POST',headers:{Cookie:cookieA,Origin:requestOrigin},body:badForm});assert.equal(badUpload.status,400);test('Private upload/download and rejection of active content');
+await call('auth/reset-request',{email:emailA},'',503);await call('auth/mfa/send',{mode:'email'},cookieA,503);test('Unavailable email service is reported honestly');
+const directBlob = await import('@vercel/blob/client');
+const largeBytes = new Uint8Array(10*1024*1024); largeBytes.set(new TextEncoder().encode('%PDF-1.4\n'));
+const reservation = await call('uploads',{name:'qa-10mb.pdf',type:'application/pdf',size:largeBytes.length},cookieA,201);
+await call('uploads/finish',{id:reservation.data.id},cookieB,404);
+const largeBlob = process.env.WZY_LOCAL_QA==='1'?await (async()=>{const {mkdir,writeFile}=await import('node:fs/promises');const {join,dirname}=await import('node:path');const target=join(process.env.WZY_QA_STORAGE_DIRECTORY,reservation.data.pathname);await mkdir(dirname(target),{recursive:true});await writeFile(target,largeBytes);return {url:null}})():await directBlob.put(reservation.data.pathname,Buffer.from(largeBytes),{access:'private',token:reservation.data.token,contentType:'application/pdf'});
+const completed = await call('uploads/finish',{id:reservation.data.id},cookieA,201);
+assert.equal(completed.data.file.size,largeBytes.length);
+if(largeBlob.url){const privateAccess=await directFetch(largeBlob.url);assert.ok([401,403,404].includes(privateAccess.status))}else{const privateAccess=await fetch(base+'/api/files/'+completed.data.file.id);assert.equal(privateAccess.status,401)}
+const largeDownload = await fetch(base+'/api/files/'+completed.data.file.id,{headers:{Cookie:cookieA}}); assert.equal(largeDownload.status,200); assert.equal((await largeDownload.arrayBuffer()).byteLength,largeBytes.length);
+test('10 MB direct upload, authenticated download and private storage');
+await call('uploads',{name:'too-large.pdf',type:'application/pdf',size:largeBytes.length+1},cookieA,400);
+const reservations=[];
+for(let i=0;i<8;i++){const pending=await call('uploads',{name:'quota-'+i+'.pdf',type:'application/pdf',size:largeBytes.length},cookieA,201);reservations.push(pending.data.id);}
+await call('uploads',{name:'quota-overflow.pdf',type:'application/pdf',size:largeBytes.length},cookieA,400);
+for(const id of reservations)await call('uploads/cancel',{id},cookieA);
+test('Storage reservations enforce the 100 MB quota without reducing the file limit');
+
+const status=await call('auth/me',undefined,cookieA);assert.equal(status.data.totpReady,true);
+const setup=await call('auth/mfa/setup',{},cookieA);const secret=setup.data.secret;function code(step){let bits='';for(const c of secret)bits+='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'.indexOf(c).toString(2).padStart(5,'0');const bytes=Buffer.from(bits.match(/.{8}/g).map(b=>parseInt(b,2)));const b=Buffer.alloc(8);b.writeBigUInt64BE(BigInt(step));const h=createHmac('sha1',bytes).update(b).digest();const o=h[19]&15;return String((h.readUInt32BE(o)&0x7fffffff)%1000000).padStart(6,'0');}
+r=await call('auth/mfa/enable',{mode:'totp',code:code(Math.floor(Date.now()/30000))},cookieA);assert.equal(r.data.user.mfa,'totp');assert.equal(r.data.backupCodes.length,8);const recovery=r.data.backupCodes[0];
+r=await call('auth/login',{email:emailA,password});assert.equal(r.data.mfa,'totp');let pending=r.cookie;await call('records',undefined,pending,401);await call('auth/mfa/verify',{code:'000000'},pending,400);await call('auth/mfa/verify',{code:recovery},pending);await call('records',undefined,pending);test('TOTP activation, login challenge and recovery code unlock');
+r=await call('auth/login',{email:emailA,password});pending=r.cookie;await call('auth/mfa/verify',{code:recovery},pending,400);await call('auth/mfa/verify',{code:code(Math.floor(Date.now()/30000)+1)},pending);await call('records',undefined,pending);test('Recovery code cannot be reused; independently generated TOTP accepted');
+await call('auth/logout',{},pending);await call('records',undefined,pending,401);test('Logout invalidates the server session');
+console.log(JSON.stringify({passed:checks.length,checks},null,2));

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" role="img" aria-labelledby="title desc">
+  <title id="title">WZY Finance</title><desc id="desc">Personal finance, with perspective. Next.js, TypeScript and PostgreSQL.</desc>
+  <defs><linearGradient id="bg"><stop stop-color="#151a1c"/><stop offset="1" stop-color="#292f34"/></linearGradient><linearGradient id="accent"><stop stop-color="#8ce4ca"/><stop offset="1" stop-color="#397d69"/></linearGradient></defs>
+  <rect width="1280" height="400" rx="24" fill="url(#bg)"/>
+  <circle cx="1120" cy="80" r="220" fill="#7ee1c2" opacity=".035"/>
+  <path d="M810 330L910 252L980 272L1070 168L1170 104" fill="none" stroke="url(#accent)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="1170" cy="104" r="12" fill="#8ce4ca"/>
+  <text x="72" y="101" fill="#8ce4ca" font-size="16" font-family="Arial,sans-serif" letter-spacing="4">PERSONAL FINANCE PLATFORM</text>
+  <text x="68" y="210" fill="#edf4f1" font-size="100" font-weight="700" font-family="Arial,sans-serif" letter-spacing="4">WZY</text>
+  <text x="74" y="268" fill="#c3ceca" font-size="29" font-family="Arial,sans-serif">Your finances, with perspective.</text>
+  <text x="75" y="333" fill="#8da59b" font-size="17" font-family="Arial,sans-serif">Next.js · TypeScript · PostgreSQL · Responsive by design</text>
+</svg>

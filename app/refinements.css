@@ -1,0 +1,164 @@
+@media (max-height: 950px) {
+  .sidebar-tip {
+    display: none;
+  }
+  .sidebar-bottom {
+    padding-top: 14px;
+  }
+  .brand {
+    padding-bottom: 21px;
+  }
+  .nav-label {
+    margin-top: 19px;
+  }
+  .sidebar nav {
+    gap: 1px;
+  }
+  .sidebar nav button {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .profile {
+    padding: 15px 0;
+  }
+}
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.main-wrap {
+  min-height: 100dvh;
+}
+.cash-flow .chart path {
+  transition: d 0.6s;
+}
+.dark .cash-flow .chart path[stroke="#357c67"] {
+  stroke: #78bfa4;
+}
+.dark .cash-flow .chart path[stroke="#a8b2bd"] {
+  stroke: #8c9d9b;
+}
+.topbar > .breadcrumb-wrap {
+  min-width: 0;
+}
+.topbar > .breadcrumb-wrap > b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dark .due-pill {
+  color: #ead0a7;
+}
+.period input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+.modal-overlay .button {
+  min-height: 42px;
+}
+.modal input,
+.modal select {
+  min-height: 45px;
+}
+@media (max-width: 600px) {
+  .heading-actions {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .heading-actions .period {
+    padding: 11px 10px;
+    font-size: 12px;
+    gap: 5px;
+    min-width: 0;
+  }
+  .heading-actions .period input {
+    width: 142px;
+    max-width: 100%;
+    font-size: 12px;
+  }
+  .heading-actions > .primary {
+    font-size: 12px;
+    gap: 5px;
+    padding: 12px 10px;
+    min-width: 0;
+  }
+  .heading-actions > .primary svg {
+    width: 16px;
+  }
+  .topbar {
+    padding: 0 12px;
+  }
+  .header-tools {
+    gap: 5px;
+  }
+  .header-tools .demo-badge {
+    font-size: 10px;
+    white-space: nowrap;
+    padding: 5px 7px;
+  }
+  .breadcrumb-wrap > b {
+    font-size: 12px;
+    max-width: 145px;
+  }
+  .metric-label {
+    min-height: 30px;
+    height: auto;
+  }
+  .metric strong {
+    font-size: clamp(19px, 5.7vw, 24px);
+    white-space: nowrap;
+  }
+  .metric {
+    padding: 16px 12px;
+  }
+  .metric .icon-box {
+    width: 27px;
+    height: 27px;
+  }
+  .metric .due-pill {
+    font-size: 11px;
+  }
+  .metric p {
+    font-size: 11px;
+  }
+  .auth-screen .auth-footer {
+    font-size: 11px;
+  }
+  .auth-back {
+    z-index: 2;
+  }
+  .group-price strong,
+  .plan-value,
+  .account-card > strong {
+    font-size: 30px;
+  }
+  .settings-heading p,
+  .preference-row p {
+    font-size: 13px;
+  }
+  .auth-card label {
+    font-size: 14px;
+  }
+}
+@media (max-width: 360px) {
+  .heading-actions {
+    flex-wrap: wrap;
+  }
+  .heading-actions > .primary {
+    flex: 1;
+  }
+  .period input {
+    max-width: 137px !important;
+  }
+  .metric strong {
+    font-size: 20px;
+  }
+  .header-tools .demo-badge {
+    font-size: 9px;
+  }
+  .breadcrumb-wrap > b {
+    max-width: 105px;
+  }
+  .page-heading h1 {
+    font-size: 26px;
+  }
+}
